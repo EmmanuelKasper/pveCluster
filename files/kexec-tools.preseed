@@ -1,0 +1,4 @@
+# Should kexec-tools handle reboots?
+# true !
+kexec-tools	kexec-tools/load_kexec	boolean	true
+kexec-tools	kexec-tools/use_grub_config	boolean	true
