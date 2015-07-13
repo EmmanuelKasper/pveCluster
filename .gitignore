@@ -1,1 +1,4 @@
-.vagrant/
+.project
+manubook.yml
+cluster.inv
+.vagrant

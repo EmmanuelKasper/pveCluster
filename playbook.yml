@@ -8,8 +8,8 @@
     # Will include all hosts the playbook is run on.
     # See http://xmeblog.blogspot.com/2013/06/ansible-dynamicaly-update-etchosts.html for explanation
     - name: Build hosts file
-      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" state=present
-      when: hostvars[item].ansible_default_ipv4.address is defined
+      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ ansible_ssh_host }} {{item}}" state=present
+      when: ansible_ssh_host is defined
       with_items: groups['all']
 
     - name: set hostname
@@ -42,6 +42,14 @@
 
     - name: install kexec-tools to quickly reboot
       apt: pkg=kexec-tools update_cache=no state=latest
+
+    - name: create a bridge
+      # > indicates a multiline string in YAML synthax
+      shell: >
+        pvesh create nodes/px1/network
+        -iface vmbr0 -type bridge -bridge_ports eth1
+        -address {{ ansible_ssh_host }} -netmask 255.0.0.0
+        -autostart true
 
     # https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
     - name: restart machine
