@@ -27,10 +27,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # your network.
   # config.vm.network "public_network"
 
+  config.vm.provider "virtualbox" do |vb|
   #starts an optional GUI for debugging
-  #config.vm.provider "virtualbox" do |v|
-  #  v.gui = true
-  #end
+  # vb.gui = true
+    vb.customize ["modifyvm", :id, "--memory", "1280"]
+  end
 
   # we need a temp ip until the bridge is configured
   config.vm.provision "shell",
