@@ -10,7 +10,7 @@
     - name: Build hosts file
       lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ ansible_ssh_host }} {{item}}" state=present
       when: ansible_ssh_host is defined
-      with_items: groups['all']
+      with_items: '{{groups.all}}'
 
     - name: set hostname
       hostname: name={{ inventory_hostname }}
