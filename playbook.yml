@@ -28,11 +28,11 @@
       apt: pkg={{item}} update_cache=yes state=latest cache_valid_time=0
       with_items:
         - proxmox-ve
-        - ntp
         - ssh
         - postfix
         - ksm-control-daemon
         - open-iscsi
+        - systemd-sysv
 
     - name: upload a preseed file for kexec-tools containing our answers for debconf
       copy: src=files/kexec-tools.preseed dest=/var/tmp/kexec-tools.preseed
