@@ -1,6 +1,8 @@
 ---
 - hosts: all
   gather_facts: yes
+  become: yes
+  become_method: sudo
 
   tasks:
 
@@ -69,7 +71,7 @@
         state=started
         delay=25
         timeout=300
-      sudo: false
+      become: no
 
     - shell: uname -srm
       register: kernel_string

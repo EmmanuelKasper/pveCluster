@@ -38,7 +38,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     inline: "/sbin/ifquery vmbr0 || sudo ifconfig eth1 10.10.10.101 netmask 255.255.255.0 ; sleep 2"
 
   config.vm.provision "ansible" do |ansible|
-    ansible.sudo = true
     ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
     ansible.playbook = "playbook.yml"
     ansible.inventory_path = "clusterInventory"
