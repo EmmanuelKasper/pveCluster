@@ -26,6 +26,12 @@
     - name: Add promox pvetest repo
       apt_repository: repo='deb http://download.proxmox.com/debian jessie pvetest'
 
+    - name: Disable proxmox enterprise
+      apt_repository:
+        repo='deb https://enterprise.proxmox.com/debian jessie pve-enterprise'
+        filename=pve-enterprise.list
+        state=absent
+
     - name: install our proxmox packages
       apt: pkg={{item}} update_cache=yes state=latest cache_valid_time=0
       with_items:
@@ -45,6 +51,11 @@
     - name: install kexec-tools to quickly reboot
       apt: pkg=kexec-tools update_cache=no state=latest
 
+    - name: detect if we configured a vmbr0 bridge
+      command: ifquery vmbr0
+      register: vmbr0_status
+      ignore_errors: yes
+
     - name: create a bridge
       # > indicates a multiline string in YAML synthax
       shell: >
@@ -52,6 +63,7 @@
         -iface vmbr0 -type bridge -bridge_ports eth1
         -address {{ ansible_ssh_host }} -netmask 255.0.0.0
         -autostart true
+      when: vmbr0_status.rc != 0
 
     # https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
     - name: restart machine
