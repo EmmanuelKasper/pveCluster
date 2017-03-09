@@ -8,23 +8,18 @@
 
     # Idempotent way to build a /etc/hosts file with Ansible using your Ansible hosts inventory for a source.
     # Will include all hosts the playbook is run on.
-    # See http://xmeblog.blogspot.com/2013/06/ansible-dynamicaly-update-etchosts.html for explanation
-    - name: Build hosts file
-      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ ansible_ssh_host }} {{item}}" state=present
-      when: ansible_ssh_host is defined
-      with_items: '{{groups.all}}'
+    - name: Remove /etc/host entry if it contains our hostname
+      lineinfile: dest=/etc/hosts regexp="{{ansible_hostname}}" state=absent
 
-    - name: set hostname
-      hostname: name={{ inventory_hostname }}
-
-    - name: set root password to root
-      user: name=root password=$6$NujLAYHzgbY6$Lz/AP1KS7Wsg2AM1WbMwMmmjXutgsZ/I41XDrpbhl3mKc0TNIbz45waR.2sIGIcSbGo30pf.GJsUTdOS8klrZ/
+   # See http://xmeblog.blogspot.com/2013/06/ansible-dynamicaly-update-etchosts.html for explanation
+    - name: Build hosts file mapping our hostname to our non-loopback ip
+      lineinfile: dest=/etc/hosts regexp="{{ansible_default_ipv4.address}} {{ansible_hostname}}" line="{{ansible_default_ipv4.address}} {{ansible_hostname}}" state=present
 
     - name: Add Proxmox install repo apt key
-      apt_key: url=http://download.proxmox.com/debian/key.asc state=present
+      apt_key: url=http://192.168.29.2/pkg/dists/stretch/key.gpg state=present
 
     - name: Add promox pvetest repo
-      apt_repository: repo='deb http://download.proxmox.com/debian jessie pvetest'
+      apt_repository: repo='deb http://192.168.29.2/pkg/ stretch pve-5.0'
 
     - name: Disable proxmox enterprise
       apt_repository:
@@ -39,11 +34,6 @@
       apt: pkg={{item}} update_cache=yes state=latest cache_valid_time=0
       with_items:
         - proxmox-ve
-        - ssh
-        - postfix
-        - ksm-control-daemon
-        - open-iscsi
-        - systemd-sysv
 
     - name: upload a preseed file for kexec-tools containing our answers for debconf
       copy: src=files/kexec-tools.preseed dest=/var/tmp/kexec-tools.preseed
@@ -54,19 +44,8 @@
     - name: install kexec-tools to quickly reboot
       apt: pkg=kexec-tools update_cache=no state=latest
 
-    - name: detect if we configured a vmbr0 bridge
-      command: ifquery vmbr0
-      register: vmbr0_status
-      ignore_errors: yes
-
-    - name: create a bridge
-      # > indicates a multiline string in YAML synthax
-      shell: >
-        pvesh create nodes/px1/network
-        -iface vmbr0 -type bridge -bridge_ports eth1
-        -address {{ ansible_ssh_host }} -netmask 255.0.0.0
-        -autostart true
-      when: vmbr0_status.rc != 0
+    - name: upload an interface file with a bridge
+      template: src=files/interfaces.j2 dest=/etc/network/interfaces
 
     # https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
     - name: restart machine
