@@ -44,8 +44,14 @@
     - name: install kexec-tools to quickly reboot
       apt: pkg=kexec-tools update_cache=no state=latest
 
+    - name: detect if we have a vmbr0 bridge already present
+      command: ifquery vmbr0
+      register: has_bridge
+      ignore_errors: true
+
     - name: upload an interface file with a bridge
       template: src=files/interfaces.j2 dest=/etc/network/interfaces
+      when: not has_bridge
 
     # https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
     - name: restart machine
@@ -63,7 +69,7 @@
         host={{ ansible_ssh_host }}
         port=8006
         state=started
-        delay=25
+        delay=30
         timeout=300
       become: no
 
