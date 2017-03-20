@@ -16,14 +16,14 @@
       lineinfile: dest=/etc/hosts regexp="{{ansible_default_ipv4.address}} {{ansible_hostname}}" line="{{ansible_default_ipv4.address}} {{ansible_hostname}}" state=present
 
     - name: Add Proxmox install repo apt key
-      apt_key: url=http://192.168.29.2/pkg/dists/stretch/key.gpg state=present
+      apt_key: url=http://repo.proxmox.com/staging/proxmox-release-5.x.gpg
 
     - name: Add promox pvetest repo
-      apt_repository: repo='deb http://192.168.29.2/pkg/ stretch pve-5.0'
+      apt_repository: repo='deb http://repo.proxmox.com/staging/pve stretch pve-5.0'
 
     - name: Disable proxmox enterprise
       apt_repository:
-        repo='deb https://enterprise.proxmox.com/debian jessie pve-enterprise'
+        repo='deb https://enterprise.proxmox.com/debian stretch pve-enterprise'
         filename=pve-enterprise.list
         state=absent
 
