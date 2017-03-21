@@ -48,7 +48,7 @@
 
     - name: upload an interface file with a bridge
       template: src=files/interfaces.j2 dest=/etc/network/interfaces
-      when: not has_bridge
+      when: has_bridge|failed
 
     # https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
     - name: restart machine
