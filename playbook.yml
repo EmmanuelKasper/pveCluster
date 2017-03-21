@@ -19,7 +19,7 @@
       apt_key: url=http://repo.proxmox.com/staging/proxmox-release-5.x.gpg
 
     - name: Add promox pvetest repo
-      apt_repository: repo='deb http://repo.proxmox.com/staging/pve stretch pve-5.0'
+      apt_repository: repo='deb http://download.proxmox.com/debian stretch pvetest'
 
     - name: Disable proxmox enterprise
       apt_repository:
