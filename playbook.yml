@@ -32,6 +32,9 @@
         filename=pve-enterprise.list
         state=absent
 
+    - name: Use unsafe io option for dpkg to speed up installs
+      lineinfile: dest=/etc/dpkg/dpkg.cfg.d/force-unsafe-io line=force-unsafe-io create=yes
+
     - name: install our proxmox packages
       apt: pkg={{item}} update_cache=yes state=latest cache_valid_time=0
       with_items:
