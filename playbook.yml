@@ -23,7 +23,7 @@
 
     - name: Disable proxmox enterprise
       apt_repository:
-        repo='deb https://enterprise.proxmox.com/debian stretch pve-enterprise'
+        repo='deb https://enterprise.proxmox.com/debian/pve stretch pve-enterprise'
         filename=pve-enterprise.list
         state=absent
 
