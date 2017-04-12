@@ -44,10 +44,11 @@
     - name: install kexec-tools to quickly reboot
       apt: pkg=kexec-tools update_cache=no state=latest
 
-    - name: detect if we have a vmbr0 bridge already present
+    - name: we expect to have a vmbr0 bridge already present
       command: ifquery vmbr0
       register: has_bridge
       ignore_errors: true
+      changed_when: false
 
     - name: upload an interface file with a bridge
       template: src=files/interfaces.j2 dest=/etc/network/interfaces
